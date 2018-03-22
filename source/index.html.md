@@ -25,7 +25,7 @@ Para adquirir seu Token de acesso para o ambiente de produção, entre em contat
 
 O ambiente de homologação pode ser usado para validar sua integração com a API Zapay.
 
-O acesos é feito através do endpoint: `hmg.api.usezapay.com.br`.
+O acesso é feito através do endpoint: `hmg.api.usezapay.com.br`.
 
 Para a autenticação, deve-se utilizar o Token de acesso abaixo:
 
@@ -87,9 +87,11 @@ Merchandise são os produtos ou serviços a serem comprados ou adquiridos pelos 
       "merchandise": [
           {
               "name": "PROPULSOR DE ÍONS",
+              "code": "192301"
               "value": 20000
           }, {
               "name": "REATOR ARC",
+              "code": "192302"
               "value": 50000
           }
       ],
