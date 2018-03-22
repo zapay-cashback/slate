@@ -1,239 +1,146 @@
 ---
-title: API Reference
+title: API Zapay
 
-language_tabs: # must be one of https://git.io/vQNgJ
+language_tabs:
   - shell
-  - ruby
-  - python
-  - javascript
-
-toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
-  - <a href='https://github.com/lord/slate'>Documentation Powered by Slate</a>
-
-includes:
-  - errors
-
-search: true
 ---
 
-# Introduction
+# Introdução
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+Bem-vindo à API da Zapay Pagamentos. Através de nossa API, são disponibilizados endpoints para que seu sistema se comunique diretamente com o usuário do aplicativo.
 
-We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+# Autenticação
 
-This example API documentation page was created with [Slate](https://github.com/lord/slate). Feel free to edit it and use it as a base for your own API's documentation.
+A Zapay Pagamentos utiliza o sistema de autenticação OAuth2 para validar suas requisições. Isto quer dizer que é esperada uma header contendo um Token de acesso em todas as chamadas feitas à API Zapay. O formato da header é o seguinte:
 
-# Authentication
-
-> To authorize, use this code:
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-```
-
-```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-```
-
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
+`Authorization: Bearer <TOKEN>`
 
 <aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
+Substitua <code>TOKEN</code> pelo seu próprio Token de acesso.
 </aside>
 
-# Kittens
+Para adquirir seu Token de acesso para o ambiente de produção, entre em contato conosco atráves do e-mail `contato@usezapay.com.br`.
 
-## Get All Kittens
+## Homologação
 
-```ruby
-require 'kittn'
+O ambiente de homologação pode ser usado para validar sua integração com a API Zapay.
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
+O acesos é feito através do endpoint: `hmg.api.usezapay.com.br`.
 
-```python
-import kittn
+Para a autenticação, deve-se utilizar o Token de acesso abaixo:
 
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
-
-```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
-```
-
-> The above command returns JSON structured like this:
-
-```json
-[
-  {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
-  },
-  {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
-  }
-]
-```
-
-This endpoint retrieves all kittens.
-
-### HTTP Request
-
-`GET http://example.com/api/kittens`
-
-### Query Parameters
-
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
-
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
+<aside class="notice">
+G2XHRBvcVzmUcLKkQEyzubmwybFyTh
 </aside>
 
-## Get a Specific Kitten
+# Unidades
 
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
+Unidades são os estabelecimentos que fazem vendas: é necessário possuir uma unidade cadastrada para fazer uma associação com os produtos vendidos.
 
 ```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
+  curl -X POST \
+  -H "Authorization: Bearer <Token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+          "name":"Stark Industries LTDA",
+          "fantasy_name":"Stark Industries",
+          "cnpj":"00000000000000",
+          "contact_info": {
+              "phone": "00000000000",
+              "email": "contato@starkindustries.com"
+          }
+      }' \
+  http://hmg.api.usezapay.com.br/unit/register/
 ```
 
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.get(2);
-```
-
-> The above command returns JSON structured like this:
+> Exemplo de resposta:
 
 ```json
-{
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
-}
+{"status": "success"}
 ```
 
-This endpoint retrieves a specific kitten.
+Este endpoint registra uma unidade.
 
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
+### Requisição HTTP
 
-### HTTP Request
+`POST http://hmg.api.usezapay.com.br/unit/register/`
 
-`GET http://example.com/kittens/<ID>`
+### Parâmetros
 
-### URL Parameters
+Parâmetro | Tipo | Obrigatório | Descrição
+--------- | ---- | ----------- | ------ | -----------
+name | String | Sim | A Razão Social da unidade.
+fantasy_name | String | Sim | Nome Fantasia da unidade.
+cnpj | String | Sim | O CNPJ da unidade. Deve conter apenas números e ter 14 dígitos.
+ contact_info[phone] | String | Sim | O telefone de contato da unidade. Deve ter apenas números e 10 ou 11 dígitos (sendo os dois primeiros o DDD).
+contact_info[email] | String | Sim | O e-mail de contato da unidade. Deve ter um formato de e-mail válido.
 
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
+# Merchandise
 
-## Delete a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.delete(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.delete(2)
-```
+Merchandise são os produtos ou serviços a serem comprados ou adquiridos pelos usuários finais.
 
 ```shell
-curl "http://example.com/api/kittens/2"
-  -X DELETE
-  -H "Authorization: meowmeowmeow"
+  curl -X POST \
+  -H "Authorization: Bearer <Token>" \
+  -H "Content-type: application/json" \
+  -d '{
+      "merchandise": [
+          {
+              "name": "PROPULSOR DE ÍONS",
+              "value": 20000
+          }, {
+              "name": "REATOR ARC",
+              "value": 50000
+          }
+      ],
+      "user_identifier": {
+          "value": "00000000000",
+          "type": "cpf"
+      },
+      "unit_identifier": {
+          "type": "cnpj",
+          "value": "00000000000000"
+      }}' \
+  http://hmg.api.usezapay.com.br/merchandise/send/
 ```
 
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let max = api.kittens.delete(2);
-```
-
-> The above command returns JSON structured like this:
+> Exemplo de resposta:
 
 ```json
-{
-  "id": 2,
-  "deleted" : ":("
-}
+{"status": "success"}
 ```
 
-This endpoint deletes a specific kitten.
+Este endpoint envia produtos ou serviços a serem pagos pelo usuário final.
 
-### HTTP Request
+<aside class="notice">
+O valor total da compra é calculado automaticamente com base nos valores dos produtos/serviçoes e suas quantidades.
+</aside>
 
-`DELETE http://example.com/kittens/<ID>`
+### Requisição HTTP
 
-### URL Parameters
+`POST http://hmg.api.usezapay.com.br/merchandise/send/`
 
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to delete
+### Parâmetros
 
+Parâmetro | Tipo | Obrigatório | Descrição
+--------- | ---- | ----------- | ------ | -----------
+merchandise | Array | Sim | A lista de objetos do tipo Merchandise (veja abaixo). Deve conter ao menos um objeto.
+user_identifier | Objeto | Sim | Objeto contendo informações sobre o usuário final.
+user_identifier[type] | String | Sim | O tipo de parâmetro identificador do usuário. Atualmente, somente cpf é aceito.
+user_identifier[value] | String | Sim | O valor do parâmetro identificador do usuário. Um CPF, por exemplo.
+unit_identifier | Objeto | Sim | Objeto contendo informações sobre a unidade responsável pela venda.
+unit_identifier[type] | String | Sim | O tipo de parâmetro identificador da unidade. Atualmente, somente cnpj é aceito.
+
+
+## Objeto Merchandise
+
+Trata-se de uma representação do produto ou serviço a ser adquirido. 
+
+### Parâmetros
+
+Parâmetro | Tipo | Obrigatório | Descrição
+--------- | ---- | ----------- | ------ | -----------
+name | String | Sim | O nome do produto ou serviço
+value | Inteiro | Sim | O valor do produto ou serviço. Deve ser um inteiro e deve ser enviado em centavos (por exemplo, R$ 12,50 = 1250)
+code | String | Sim | Um código único identificador do produto. Deve ser o código de barras, quando existir.
+amount | Inteiro | Não | A quantidade dete tipo de produto. Se não for informada, assume 1.
