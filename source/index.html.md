@@ -38,25 +38,25 @@ G2XHRBvcVzmUcLKkQEyzubmwybFyTh
 Unidades são os estabelecimentos que fazem vendas: é necessário possuir uma unidade cadastrada para fazer uma associação com os produtos vendidos.
 
 ```shell
-  curl -X POST \
-  -H "Authorization: Bearer <Token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-          "name":"Stark Industries LTDA",
-          "fantasy_name":"Stark Industries",
-          "cnpj":"00000000000000",
-          "contact_info": {
-              "phone": "00000000000",
-              "email": "contato@starkindustries.com"
-          }
-      }' \
-  http://hmg.api.usezapay.com.br/unit/register/
+    curl -X POST \
+    -H "Authorization: Bearer <Token>" \
+    -H "Content-Type: application/json" \
+    -d '{
+        "name":"Stark Industries LTDA",
+        "fantasy_name":"Stark Industries",
+        "cnpj":"00000000000000",
+        "contact_info": {
+            "phone": "00000000000",
+            "email": "contato@starkindustries.com"
+        }
+    }' \
+http://hmg.api.usezapay.com.br/unit/register/
 ```
 
 > Exemplo de resposta:
 
 ```json
-{"status": "success"}
+    {"status": "success"}
 ```
 
 Este endpoint registra uma unidade.
@@ -81,35 +81,36 @@ Merchandise são os produtos ou serviços a serem comprados ou adquiridos pelos 
 
 ```shell
   curl -X POST \
-  -H "Authorization: Bearer <Token>" \
-  -H "Content-type: application/json" \
-  -d '{
-      "merchandise": [
-          {
-              "name": "PROPULSOR DE ÍONS",
-              "code": "192301"
-              "value": 20000
-          }, {
-              "name": "REATOR ARC",
-              "code": "192302"
-              "value": 50000
-          }
-      ],
-      "user_identifier": {
-          "value": "00000000000",
-          "type": "cpf"
-      },
-      "unit_identifier": {
-          "type": "cnpj",
-          "value": "00000000000000"
-      }}' \
-  http://hmg.api.usezapay.com.br/merchandise/send/
+    -H "Authorization: Bearer <Token>" \
+    -H "Content-type: application/json" \
+    -d '{
+        "merchandise": [
+            {
+                "name": "PROPULSOR DE ÍONS",
+                "code": "192301",
+                "value": 20000
+            }, {
+                "name": "REATOR ARC",
+                "code": "192302",
+                "value": 50000
+            }
+        ],
+        "user_identifier": {
+            "value": "00000000000",
+            "type": "cpf"
+        },
+        "unit_identifier": {
+            "type": "cnpj",
+            "value": "00000000000000"
+        }
+    }' \
+    http://hmg.api.usezapay.com.br/merchandise/send/
 ```
 
 > Exemplo de resposta:
 
 ```json
-{"status": "success"}
+    {"status": "success"}
 ```
 
 Este endpoint envia produtos ou serviços a serem pagos pelo usuário final.
@@ -132,6 +133,7 @@ user_identifier[type] | String | Sim | O tipo de parâmetro identificador do usu
 user_identifier[value] | String | Sim | O valor do parâmetro identificador do usuário. Um CPF, por exemplo.
 unit_identifier | Objeto | Sim | Objeto contendo informações sobre a unidade responsável pela venda.
 unit_identifier[type] | String | Sim | O tipo de parâmetro identificador da unidade. Atualmente, somente cnpj é aceito.
+unit_identifier[value] | String | Sim | O valor do parâmetro identificador da unidade. Um CNPJ, por exemplo.
 
 
 ## Objeto Merchandise
@@ -146,3 +148,102 @@ name | String | Sim | O nome do produto ou serviço
 value | Inteiro | Sim | O valor do produto ou serviço. Deve ser um inteiro e deve ser enviado em centavos (por exemplo, R$ 12,50 = 1250)
 code | String | Sim | Um código único identificador do produto. Deve ser o código de barras, quando existir.
 amount | Inteiro | Não | A quantidade dete tipo de produto. Se não for informada, assume 1.
+
+# Confirmação
+
+É possível cadastrar um endpoint para o qual serão enviadas confirmações de compras em sua unidade.
+O endpoint deve ser capaz de receber uma requisição POST da API da Zapay.
+
+## Cadastrar endpoint
+
+O endpoint cadastrado pode ser sobreescrito a qualquer momento.
+
+```shell
+    curl -X GET \
+    -H "Authorization: Bearer <Token>" \
+    -H "Content-type: application/json" \
+    "http://hmg.api.usezapay.com.br/unit/confirmation-endpoint/?type=cnpj&value=00000000000000"
+```
+
+> Exemplo de resposta:
+
+```json
+    {"status": "success"}
+```
+
+### Requisição HTTP
+
+`GET http://hmg.api.usezapay.com.br/unit/confirmation-endpoint/`
+
+### Parâmetros
+
+Os parâmetros deste método devem ser enviados na URL.
+
+Parâmetro | Tipo | Obrigatório | Descrição
+--------- | ---- | ----------- | ------ | -----------
+type  | String | Sim | O tipo de parâmetro identificador da unidade. Atualmente, somente cnpj é aceito.
+value | String | Sim | O valor do parâmetro identificador da unidade. Um CNPJ, por exemplo.
+
+## Consultar endpoint
+
+Em caso de dúvidas, o endpoint de confirmação cadastrado para a unidade pode ser consultado.
+
+```shell
+    curl -X POST \
+    -H "Authorization: Bearer <Token>" \
+    -H "Content-type: application/json" \
+    -d '{
+        "endpoint": "https://your.magical.api.com/confirmation-receiver/",
+        "unit_identifier": {
+            "type": "cnpj",
+            "value": "00000000000000"
+        }
+    }' \
+    http://hmg.api.usezapay.com.br/unit/confirmation-endpoint/
+```
+
+> Exemplo de resposta:
+
+```json
+  {"endpoint": "https://your.magical.api.com/confirmation-receiver/"}
+```
+
+### Requisição HTTP
+
+`GET http://hmg.api.usezapay.com.br/unit/confirmation-endpoint/`
+
+### Parâmetros
+
+Parâmetro | Tipo | Obrigatório | Descrição
+--------- | ---- | ----------- | ------ | -----------
+endpoint | String | Sim | O endpoint a ser cadastrado.
+unit_identifier | Objeto | Sim | Objeto contendo informações sobre a unidade a ser consultada.
+unit_identifier[type] | String | Sim | O tipo de parâmetro identificador da unidade. Atualmente, somente cnpj é aceito.
+unit_identifier[value] | String | Sim | O valor do parâmetro identificador da unidade. Um CNPJ, por exemplo.
+
+
+## Objeto Confirmation
+> Exemplo de confirmação de compra:
+
+```json
+    {
+        "status": "success",
+        "user_info": {
+            "type": "cpf",
+            "value": "00000000000"
+        },
+        "merchandise": [
+            {
+                "name": "PROPULSOR DE ÍONS",
+                "code": "192301",
+                "value": 20000
+            }, {
+                "name": "REATOR ARC",
+                "code": "192302",
+                "value": 50000
+            }
+        ],
+        "total": 70000
+    }
+```
+A confirmação enviada para o endpoint registrado possui o formato visto ao lado.
